@@ -2,11 +2,10 @@
 pragma solidity ^0.8.17;
 
 contract Access {
-
-    address public owner; 
+    address public owner;
     mapping(address => bool) public admins;
 
-    constructor () { 
+    constructor() {
         admins[msg.sender] = true;
         owner = msg.sender;
     }
@@ -34,6 +33,4 @@ contract Access {
         require(admins[msg.sender], "You are not admin!");
         _;
     }
-
 }
-
