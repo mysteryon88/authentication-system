@@ -1,51 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "./ERC721/ERC721.sol";
+import "./ERC721/extensions/ERC721URIStorage.sol";
 
 contract Passport is ERC721, ERC721URIStorage {
-    using Counters for Counters.Counter;
-
-    Counters.Counter private _tokenIdCounter;
-
     address private owner;
+
+    uint256 private idPass = 1;
+
+    mapping(address => uint256) private passId;
 
     constructor() ERC721("Passport", "PASS") {
         owner = msg.sender;
     }
 
     function safeMintPass(address to, string memory uri) external onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        require(passId[to] == 0, "Already has a passport!");
+        uint256 tokenId = idPass;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+        passId[to] = tokenId;
+        idPass++;
     }
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public pure override {
-        revert("Passport cannot be transferred!!");
-    }
-
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public pure override {
-        revert("Passport cannot be transferred!!");
-    }
-
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) public pure override {
-        revert("Passport cannot be transferred!!");
+    //надо подумать
+    function getIdMyPass() external view returns (uint256) {
+        return passId[msg.sender];
     }
 
     function _burn(

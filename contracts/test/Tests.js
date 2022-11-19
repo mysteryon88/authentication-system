@@ -22,23 +22,12 @@ describe('Passport', function () {
     expect(authentication.address).to.be.properAddress
   })
   it('Mint pass', async function () {
-    await expect(authentication.connect(owner).createPass(adm1.address, 'uri'))
-      .to.emit(pass, 'Transfer')
-      .withArgs('0x0000000000000000000000000000000000000000', adm1.address, 0)
+    await authentication.connect(owner).createPass(cli1.address, 'uri')
 
-    expect(await pass.tokenURI(0)).to.eq('uri')
+    expect(await pass.tokenURI(1)).to.eq('uri')
     await expect(
       pass.connect(adm1).safeMintPass(adm1.address, 'uri'),
     ).to.be.revertedWith('You are not owner!')
-  })
-
-  it('transfer prohibition', async function () {
-    await expect(
-      pass.connect(adm1).transferFrom(adm1.address, cli1.address, 0),
-    ).to.be.revertedWith('Passport cannot be transferred!!')
-
-    expect(await pass.balanceOf(adm1.address)).to.eq(1)
-    expect(await pass.balanceOf(cli1.address)).to.eq(0)
   })
 })
 
@@ -62,5 +51,13 @@ describe('Access', function () {
   it('setupOwner', async function () {
     await authentication.connect(owner).setupOwner(adm1.address)
     expect(await authentication.owner()).to.eq(adm1.address)
+  })
+})
+
+describe('Authentication', function () {
+  it('sendRequest() + event Request', async function () {
+    await expect(authentication.connect(cli1).sendRequest())
+      .to.emit(authentication, 'Request')
+      .withArgs(0, cli1.address)
   })
 })

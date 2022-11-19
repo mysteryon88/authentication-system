@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import "./Access.sol";
 import "./Passport.sol";
-import "./IPassport.sol";
 
 contract Authentication is Access {
     struct Human {
@@ -19,6 +18,10 @@ contract Authentication is Access {
 
     Passport pass;
 
+    uint idRequest;
+
+    event Request(uint256 indexed id, address sender);
+
     constructor() {
         pass = new Passport();
     }
@@ -29,6 +32,11 @@ contract Authentication is Access {
         bytes32 hashPass,
         uint256 birthday
     ) external onlyAdmin {}
+
+    function sendRequest() external {
+        emit Request(idRequest, msg.sender);
+        idRequest++;
+    }
 
     function createPass(address to, string memory uri) external onlyAdmin {
         pass.safeMintPass(to, uri);
