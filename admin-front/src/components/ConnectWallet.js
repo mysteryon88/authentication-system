@@ -3,6 +3,20 @@ import { useState } from 'react'
 
 function ConnectWallet() {
   const [walletAddress, setWalletAddress] = useState('')
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+  const Address = '0xc4248b1B0E57AB7133E78C441925eB3bC05caAF7'
+  const abi = [
+    'function name() view returns (string)',
+    'function symbol() view returns (string)',
+    'function balanceOf(address) view returns (uint)',
+    'function getIdMyPass() external view returns (address)',
+    'function transfer(address to, uint amount)',
+    'event Transfer(address indexed from, address indexed to, uint indexed tokenId)',
+    'function safeMint(address to, string memory uri)',
+    'function tokenURI(uint256 tokenId) view returns (string memory)',
+  ]
+  let balance
 
   async function requestAccount() {
     console.log('Requesting account...')
@@ -23,21 +37,15 @@ function ConnectWallet() {
     }
   }
 
-  async function connectWallet() {
-    if (typeof window.ethereum !== 'undefined') {
-      await requestAccount()
-
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-    }
-  }
-
   return (
-    <div className="App">
-      <header className="App-header">
+    <>
+      {' '}
+      <div className="App">
         <button onClick={requestAccount}>Request Account</button>
         <h3>Wallet Address: {walletAddress}</h3>
-      </header>
-    </div>
+        <h3>balance: {balance}</h3>
+      </div>
+    </>
   )
 }
 
